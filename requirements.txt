@@ -1,2 +1,4 @@
 pymongo
 dotenv
+seleniumbase==4.30.7
+beautifulsoup4==4.12.3
