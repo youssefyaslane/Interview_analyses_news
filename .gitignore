@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.build/
+dist/
+.venv/
+venv/
+pip-wheel-metadata/
+
+# Environnements / IDE
+.env
+.env.*
+*.code-workspace
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Données locales / logs
+data/
+logs/
+.airflow/
+.airflow/*
