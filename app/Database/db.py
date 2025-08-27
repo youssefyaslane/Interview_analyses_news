@@ -1,3 +1,4 @@
+# app/Database/db.py
 from datetime import datetime
 from typing import Tuple
 from pymongo import MongoClient, ASCENDING
@@ -45,10 +46,9 @@ def collections() -> Tuple[Collection, Collection, Collection]:
     links.create_index([("first_seen", ASCENDING)])
     links.create_index([("last_seen", ASCENDING)])
 
+    # Articles: seulement url/title/body_article (+ autos)
     articles.create_index([("url", ASCENDING)], unique=True)
     articles.create_index([("fetched_at", ASCENDING)])
-    articles.create_index([("section", ASCENDING)])
-    articles.create_index([("status", ASCENDING)])
 
     analyses.create_index([("url", ASCENDING)], unique=True)
     analyses.create_index([("analyzed_at", ASCENDING)])
@@ -83,33 +83,31 @@ def upsert_link(doc: dict) -> None:
     )
 
 
-def _compute_word_count(paragraphs) -> int:
-    if not paragraphs:
+def _word_count_from_body(body_article: str | None) -> int:
+    if not body_article:
         return 0
-    return sum(len((p or "").split()) for p in paragraphs if isinstance(p, str))
+    return len(body_article.split())
 
 
 def upsert_article(doc: dict) -> None:
     """
-    Upsert d’un article parsé.
-    Attendu min:
-      {"url": "...", "title": "...", "preview": "..."}
-    Optionnels:
-      paragraphs: list[str], published: str|null, section: str, status: "ok"/"empty_or_paywalled"/"error:..."
+    Upsert d’un article parsé (version MINIMALE).
+    Schéma ciblé:
+      {
+        "url": "...",
+        "title": "...",
+        "body_article": "..."     # texte intégral en string
+      }
     Champs auto:
-      word_count, fetched_at
+      word_count (calc. local), fetched_at
     """
     _, articles, _ = collections()
-    paragraphs = doc.get("paragraphs") or []
+    body_article = (doc.get("body_article") or "").strip()
     payload = {
         "url": doc["url"],
         "title": (doc.get("title") or "").strip(),
-        "preview": (doc.get("preview") or "").strip(),
-        "paragraphs": paragraphs if isinstance(paragraphs, list) else [],
-        "published": doc.get("published"),
-        "section": doc.get("section"),
-        "status": doc.get("status", "unknown"),
-        "word_count": _compute_word_count(paragraphs),
+        "body_article": body_article,
+        "word_count": _word_count_from_body(body_article),
         "fetched_at": datetime.utcnow(),
     }
     articles.update_one({"url": payload["url"]}, {"$set": payload}, upsert=True)
@@ -117,13 +115,7 @@ def upsert_article(doc: dict) -> None:
 
 def upsert_analysis(doc: dict) -> None:
     """
-    Upsert d’une analyse LLM.
-    Attendu min:
-      {"url": "...", "summary": "...", "top_topics": [...], "sentiment": "..."}
-    Optionnels:
-      model, title_src, entities[], risks_or_implications[]
-    Champs auto:
-      analyzed_at
+    Upsert d’une analyse LLM (structure libre).
     """
     _, _, analyses = collections()
     payload = {
