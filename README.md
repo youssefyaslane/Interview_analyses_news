@@ -15,7 +15,7 @@ Prject_analyse_news/
 │  │   └─ db.py                 # connexion Mongo, index, upsert_link / upsert_article / upsert_analysis
 │  ├─ scraping/
 │  │   ├─ scrape_links.py       # scraper SeleniumBase → Mongo (ft_links)
-│  │   ├─ fetch_articles_selenium.py  # scraper SeleniumBase → Mongo (ft_articles: title + body_article)
+│  │   ├─ fetch_articles_selenium.py  # scraper SeleniumBase → Mongo (ft_articles)
 │  │   └─ utils.py              # utilitaires scraping (scroll, cookies, clean text)
 │  ├─ analysis/
 │  │   └─ analyze_with_Gemini.py   # Étape 4: LangChain + Gemini → ft_analyses
@@ -85,7 +85,7 @@ Exemple de sortie :
 
 ### 3. Scraper les articles complets FT → `ft_articles`
 ```bash
-python -m app.scraping.fetch_articles_selenium
+python -m app.scraping.fetch_articles
 ```
 Exemple de document inséré dans **ft_articles** :
 ```json
