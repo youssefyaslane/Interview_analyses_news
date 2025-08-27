@@ -15,8 +15,10 @@ Prject_analyse_news/
 │  │   └─ db.py                 # connexion Mongo, index, upsert_link / upsert_article / upsert_analysis
 │  ├─ scraping/
 │  │   ├─ scrape_links.py       # scraper SeleniumBase → Mongo (ft_links)
-│  │   ├─ fetch_articles_selenium.py  # scraper SeleniumBase → Mongo (ft_articles)
+│  │   ├─ fetch_articles_selenium.py  # scraper SeleniumBase → Mongo (ft_articles: title + body_article)
 │  │   └─ utils.py              # utilitaires scraping (scroll, cookies, clean text)
+│  ├─ analysis/
+│  │   └─ analyze_with_Gemini.py   # Étape 4: LangChain + Gemini → ft_analyses
 │  └─ test/
 │     ├─ __init__.py
 │     └─ test_db.py             # smoke test d’insertion/lecture
@@ -32,14 +34,14 @@ Prject_analyse_news/
 - Python 3.10+
 - MongoDB local ou Atlas (URI)
 - Chrome/Chromium installé (SeleniumBase s’en sert)
-- (optionnel) Profil Chrome avec extension chargée (voir plus bas)
+- (optionnel) Profil Chrome avec extension chargée (voir README précédent pour détails)
 
 ---
 
-## 🚀 Installation rapide (Windows PowerShell)
+## 🚀 Installation rapide 
 ```
 python -m venv venv
-venv\Scripts\Activate.ps1
+venv\Scripts\activate
 pip install -r requirements.txt
 copy .env.example .env
 ```
@@ -53,7 +55,10 @@ MONGODB_ARTICLES_COLLECTION=ft_articles
 MONGODB_ANALYSES_COLLECTION=ft_analyses
 
 SCRAPER_USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
-GOOGLE_API_KEY=YOUR_API_KEY   # optionnel (pour la suite LLM)
+
+# LLM (Étape 4)
+GOOGLE_API_KEY=YOUR_API_KEY
+LLM_MODEL=gemini-1.5-flash
 ```
 
 ---
@@ -65,18 +70,7 @@ GOOGLE_API_KEY=YOUR_API_KEY   # optionnel (pour la suite LLM)
 python -m app.test.test_db
 ```
 
-### 2. Lancer la DB
-```bash
-python -m app.Database.db
-```
-**Sortie attendue (exemple) :**
-```
-Links:     [ {...} ]
-Articles:  [ {...} ]
-Analyses:  [ {...} ]
-```
-
-### 3. Scraper les liens publics FT
+### 2. Scraper les liens publics FT → `ft_links`
 ```bash
 python -m app.scraping.scrape_links
 ```
@@ -89,65 +83,56 @@ Exemple de sortie :
 ✅ Terminé. Total liens upsertés: 121
 ```
 
-Les liens sont insérés/mis à jour dans la collection **ft_links** de MongoDB.
-
----
-
-## 🧩 Utiliser Chrome avec extension
-
-téléchargement d’extensions de contournement de paywall **profil Chrome avec extension** :
-
-1. Télécharge ton dossier d'après ce lien "https://gitflic.ru/project/magnolia1234/bypass-paywalls-chrome-clean#installation".
-2. Ouvre Chrome → `chrome://extensions/`.
-3. Active **Mode développeur** (coin supérieur droit).
-4. Clique sur **Charger l’extension non empaquetée**.
-5. poser ton dossier.
-6. Mets à jour `fetch_articles_selenium.py` pour réutiliser ton profil :
-   ```python
-   profile_dir = r"C:\Users\HP\AppData\Local\Google\Chrome\User Data\Default"
-   fetch_articles_from_mongo(limit_per_run=None, headless=False, profile_dir=profile_dir)
-   ```
-
----
-
-### 4. Scraper les articles complets FT
+### 3. Scraper les articles complets FT → `ft_articles`
 ```bash
 python -m app.scraping.fetch_articles_selenium
 ```
-
-### Collection `ft_links`
+Exemple de document inséré dans **ft_articles** :
 ```json
 {
-  "title": "US to take 10% stake in troubled chipmaker Intel",
-  "url": "https://www.ft.com/content/Id_article",
-  "section": "home",
-  "source": "listing",
-  "first_seen": "2025-08-25T10:44:29Z",
-  "last_seen": "2025-08-25T10:44:29Z"
-}
-```
-
-### Collection `ft_articles`
-```json
-{
-  "url": "https://www.ft.com/content/Id_article",
-  "title": "US to take 10% stake in troubled chipmaker Intel",
-  "body_article": "Texte complet de l’article...",
-  "word_count": 1432,
-  "fetched_at": "2025-08-27T11:12:00Z"
+  "url": "https://www.ft.com/content/xxxx",
+  "title": "Titre complet",
+  "body_article": "Tout le texte intégral de l’article",
+  "word_count": 1420,
+  "fetched_at": "2025-08-27T12:30:00Z"
 }
 ```
 
 ---
 
+## 🔎 Étape 4 — Analyse LLM (LangChain + Gemini) → `ft_analyses`
+
+### Lancer l’analyse
+```bash
+python -m app.analysis.analyze_with_langchain
+```
+- Sélectionne les articles **non encore analysés** (body_article non vide)
+- Envoie à Gemini via **LangChain**
+- Sauvegarde dans `ft_analyses` (**sans** `risks_or_implications`)
+
+**Exemple de document `ft_analyses` :**
+```json
+{
+  "url": "https://www.ft.com/content/xxxx",
+  "model": "gemini-1.5-flash",
+  "title_src": "Titre de l'article",
+  "summary": "Résumé concis ...",
+  "top_topics": ["semiconductors", "US policy", "Intel"],
+  "sentiment": "neutral",
+  "entities": [{"type":"ORG","name":"Intel"}],
+  "analyzed_at": "2025-08-27T13:10:00Z"
+}
+```
+---
 ## 📌 Roadmap
 1. ✅ Step 1 : Config + DB helpers  
 2. ✅ Step 2 : Scraper liens publics → `ft_links`  
 3. ✅ Step 3 : Fetch articles complets → `ft_articles`  
-4. 🔜 Step 4 : Analyse LLM (Gemini) → `ft_analyses`  
+4. ✅ Step 4 : Analyse LLM (LangChain + Gemini) → `ft_analyses`  
 5. 🔜 Step 5 : Orchestration Airflow (1 exécution/jour)  
 6. 🔜 Step 6 : Dashboard (Metabase / PowerBI)
 
 ---
+
 ## ✨ Auteur
 **Youssef Yaslane** — *Data Scientist | Big Data & IA Engineer*

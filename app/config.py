@@ -16,4 +16,5 @@ SCRAPER_UA = os.getenv(
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 
-GOOGLE_API_KEY = os.getenv("AIzaSyDw9wI1vkVGWJJShZTx6Y27Doc4Yzc0pUU")
+LLM_MODEL = os.getenv("LLM_MODEL", "gemini-2.0-flash")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyDRn_VSU6Xr7o9mCTpZdDdKnVt7uqlQPFE")

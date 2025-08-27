@@ -50,6 +50,7 @@ def collections() -> Tuple[Collection, Collection, Collection]:
     articles.create_index([("url", ASCENDING)], unique=True)
     articles.create_index([("fetched_at", ASCENDING)])
 
+    # Analyses
     analyses.create_index([("url", ASCENDING)], unique=True)
     analyses.create_index([("analyzed_at", ASCENDING)])
     analyses.create_index([("sentiment", ASCENDING)])
@@ -115,7 +116,11 @@ def upsert_article(doc: dict) -> None:
 
 def upsert_analysis(doc: dict) -> None:
     """
-    Upsert d’une analyse LLM (structure libre).
+    Upsert d’une analyse LLM (sans 'risks_or_implications').
+    Attendu min :
+      {"url": "...", "summary": "...", "top_topics": [...], "sentiment": "...", "entities": [...]}
+    Champs auto :
+      analyzed_at
     """
     _, _, analyses = collections()
     payload = {
@@ -126,7 +131,6 @@ def upsert_analysis(doc: dict) -> None:
         "top_topics": doc.get("top_topics") or [],
         "sentiment": doc.get("sentiment", "neutral"),
         "entities": doc.get("entities") or [],
-        "risks_or_implications": doc.get("risks_or_implications") or [],
         "analyzed_at": datetime.utcnow(),
     }
     analyses.update_one({"url": payload["url"]}, {"$set": payload}, upsert=True)
