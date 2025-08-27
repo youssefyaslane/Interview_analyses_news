@@ -15,7 +15,7 @@ Prject_analyse_news/
 │  │   └─ db.py                 # connexion Mongo, index, upsert_link / upsert_article / upsert_analysis
 │  ├─ scraping/
 │  │   ├─ scrape_links.py       # scraper SeleniumBase → Mongo (ft_links)
-│  │   ├─ fetch_articles_selenium.py  # scraper SeleniumBase → Mongo (ft_articles)
+│  │   ├─ fetch_articles.py  # scraper SeleniumBase → Mongo (ft_articles)
 │  │   └─ utils.py              # utilitaires scraping (scroll, cookies, clean text)
 │  └─ test/
 │     ├─ __init__.py
@@ -112,7 +112,7 @@ téléchargement d’extensions de contournement de paywall **profil Chrome avec
 
 ### 4. Scraper les articles complets FT
 ```bash
-python -m app.scraping.fetch_articles_selenium
+python -m app.scraping.fetch_articles
 ```
 
 ### Collection `ft_links`
