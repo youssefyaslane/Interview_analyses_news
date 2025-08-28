@@ -138,7 +138,7 @@ python -m app.analysis.analyze_with_langchain
 
 ### 📸 Dashboard
   ```markdown
-<img src="app/assets/img/dashbord_img.png" alt="FT Dashboard" width="900"/>
+<img src="assets/img/dashbord_img.png" alt="FT Dashboard" width="900"/>
 ```
 
 
