@@ -136,10 +136,8 @@ python -m app.analysis.analyze_with_langchain
   - Treemap ou nuage de mots : `Topics`
   - Graphe réseau (visuel custom) : `Cooccurrence`
 
-### 📸 Dashboard
-  
+### 📸 Dashboar
 <img src="app/assets/img/dashbord_img.png" alt="FT Dashboard" width="1000"/>
-
 
 ---
 ## 📌 Roadmap
