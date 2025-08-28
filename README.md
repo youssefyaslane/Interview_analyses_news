@@ -16,7 +16,7 @@ Prject_analyse_news/
 │  │   └─ db.py                 # connexion Mongo, index, upsert_link / upsert_article / upsert_analysis
 │  ├─ scraping/
 │  │   ├─ scrape_links.py       # scraper SeleniumBase → Mongo (ft_links)
-│  │   ├─ fetch_articles_selenium.py  # scraper SeleniumBase → Mongo (ft_articles)
+│  │   ├─ fetch_articles.py  # scraper SeleniumBase → Mongo (ft_articles)
 │  │   └─ utils.py              # utilitaires scraping (scroll, cookies, clean text)
 │  ├─ analysis/
 │  │   └─ analyze_with_Gemini.py   # Étape 4: LangChain + Gemini → ft_analyses
