@@ -9,6 +9,7 @@ from typing import List, Tuple, Optional
 
 from app.Database.db import collections, upsert_article
 
+
 # ------------------ Core fetch ------------------
 
 def _fetch_one_article(driver: Driver, url: str, timeout: int = 35) -> Tuple[str, str]:

@@ -6,3 +6,5 @@ google-generativeai
 pydantic
 langchain
 langchain_google_genai
+pandas
+xlsxwriter

@@ -8,6 +8,13 @@ from app.config import (
     MONGODB_URI, MONGODB_DB,
     COLL_LINKS, COLL_ARTICLES, COLL_ANALYSES
 )
+# # -------------------- ENV vars direct --------------------
+# MONGODB_URI = os.environ["MONGODB_URI"]              # obligatoire
+# MONGODB_DB = os.environ.get("MONGODB_DB", "ft_daily")
+
+# COLL_LINKS = os.environ.get("MONGODB_LINKS_COLLECTION", "ft_links")
+# COLL_ARTICLES = os.environ.get("MONGODB_ARTICLES_COLLECTION", "ft_articles")
+# COLL_ANALYSES = os.environ.get("MONGODB_ANALYSES_COLLECTION", "ft_analyses")
 
 _client = None  # singleton client
 

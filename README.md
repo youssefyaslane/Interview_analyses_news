@@ -9,7 +9,8 @@ Ce projet met en place un pipeline d’analyse d’articles FT (liens, contenus,
 Prject_analyse_news/
 ├─ app/
 │  ├─ __init__.py
-│  ├─ config.py                 # charge .env (Mongo URI, DB, noms de collections, UA…)
+│  ├─ config.py 
+│  ├─ main.py                  # Pipeline d’analyse d’articles
 │  ├─ Database/
 │  │   ├─ __init__.py
 │  │   └─ db.py                 # connexion Mongo, index, upsert_link / upsert_article / upsert_analysis
@@ -124,13 +125,31 @@ python -m app.analysis.analyze_with_langchain
 }
 ```
 ---
+## 📊 Utilisation dans Power BI / Excel
+
+- Power BI Desktop → **Obtenir des données** → Excel → `data/articles_entities_dashboard.xlsx`
+- Visuels conseillés :
+  - Cartes KPI : *Total Articles*, *Avg Sentiment*, *Total Words*
+  - Courbe : articles par jour (`ByDay`)
+  - Barres : top entités (`Entities`) / par section (`BySection`)
+  - Anneau : répartition par `sentiment_label`
+  - Treemap ou nuage de mots : `Topics`
+  - Graphe réseau (visuel custom) : `Cooccurrence`
+
+### 📸 Dashboard
+  ```markdown
+<img src="app/Database/img/dashbord_img.PNG alt="FT Dashboard" width="900"/>
+```
+
+
+---
 ## 📌 Roadmap
 1. ✅ Step 1 : Config + DB helpers  
 2. ✅ Step 2 : Scraper liens publics → `ft_links`  
 3. ✅ Step 3 : Fetch articles complets → `ft_articles`  
 4. ✅ Step 4 : Analyse LLM (LangChain + Gemini) → `ft_analyses`  
 5. 🔜 Step 5 : Orchestration Airflow (1 exécution/jour)  
-6. 🔜 Step 6 : Dashboard (Metabase / PowerBI)
+6. ✅ Step 6 : Dashboard (Metabase / PowerBI)
 
 ---
 
