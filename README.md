@@ -137,7 +137,7 @@ python -m app.analysis.analyze_with_langchain
   - Graphe réseau (visuel custom) : `Cooccurrence`
 
 ### 📸 Dashboar
-<img src="assets/img/dashbord_img.png" alt="FT Dashboard" width="1000"/>
+<img src="assets/dashbord_img.png" alt="FT Dashboard" width="1000"/>
 
 ---
 ## 📌 Roadmap
